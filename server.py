@@ -25,7 +25,7 @@ server_app = FastAPI(
 class SolveRequest(BaseModel):
     board: List[int] = Field(..., description="Flat board representation")
     size: int = Field(3, ge=3, le=4)
-    algorithm: str = Field("astar_linear_conflict")
+    algorithm: str = Field("astar_manhattan")
     timeout_sec: float = Field(8.0, ge=0.5, le=30.0)
 
 class BenchmarkRequest(BaseModel):
@@ -128,6 +128,16 @@ def benchmark_puzzle(req: BenchmarkRequest):
         raise HTTPException(status_code=500, detail=f"Benchmark error: {str(e)}")
 
 
+@server_app.middleware("http")
+async def add_no_cache_headers(request, call_next):
+    response = await call_next(request)
+    if request.url.path.startswith("/static") or request.url.path == "/":
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+    return response
+
+
 # Mount static directory
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 if not os.path.exists(static_dir):
@@ -139,7 +149,10 @@ server_app.mount("/static", StaticFiles(directory=static_dir), name="static")
 def serve_index():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
-        return FileResponse(index_file)
+        return FileResponse(
+            index_file,
+            headers={"Cache-Control": "no-cache, no-store, must-revalidate"}
+        )
     return {"message": "AI Puzzle Solver Backend is Running."}
 
 # Aliases for compatibility with various uvicorn invocation conventions

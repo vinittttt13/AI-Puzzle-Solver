@@ -6,77 +6,56 @@ from .iddfs import IterativeDeepeningDFS
 from .greedy import GreedyBestFirstSearch
 from .idastar import IDAStarSearch
 
+# Core Algorithms Registry - Focused on 5th Semester AI Syllabus
 ALGORITHM_REGISTRY = {
     "astar_manhattan": lambda: AStarSearch(heuristic_name="manhattan"),
-    "astar_linear_conflict": lambda: AStarSearch(heuristic_name="linear_conflict"),
     "astar_misplaced": lambda: AStarSearch(heuristic_name="misplaced"),
-    "astar_euclidean": lambda: AStarSearch(heuristic_name="euclidean"),
+    "bfs": lambda: BreadthFirstSearch(),
+    "dfs": lambda: DepthFirstSearch(max_depth=25),
     "greedy_manhattan": lambda: GreedyBestFirstSearch(heuristic_name="manhattan"),
+    # Compatibility mappings
+    "astar_linear_conflict": lambda: AStarSearch(heuristic_name="linear_conflict"),
+    "astar_euclidean": lambda: AStarSearch(heuristic_name="euclidean"),
     "greedy_linear_conflict": lambda: GreedyBestFirstSearch(heuristic_name="linear_conflict"),
     "greedy_misplaced": lambda: GreedyBestFirstSearch(heuristic_name="misplaced"),
-    "bfs": lambda: BreadthFirstSearch(),
-    "dfs": lambda: DepthFirstSearch(max_depth=30),
     "iddfs": lambda: IterativeDeepeningDFS(max_limit=32),
     "idastar_manhattan": lambda: IDAStarSearch(heuristic_name="manhattan"),
     "idastar_linear_conflict": lambda: IDAStarSearch(heuristic_name="linear_conflict")
 }
 
+# Metadata for the standard AI algorithms
 ALGORITHM_METADATA = {
-    "astar_linear_conflict": {
-        "name": "A* (Linear Conflict)",
-        "type": "Informed (Heuristic)",
-        "optimal": True,
-        "time_complexity": "O(b^d)",
-        "space_complexity": "O(b^d)",
-        "description": "A* with Manhattan + Linear Conflict. Expands the fewest nodes while guaranteeing an optimal solution."
-    },
     "astar_manhattan": {
-        "name": "A* (Manhattan Distance)",
+        "name": "A* Search (Manhattan Distance)",
         "type": "Informed (Heuristic)",
         "optimal": True,
         "time_complexity": "O(b^d)",
         "space_complexity": "O(b^d)",
-        "description": "Standard benchmark A* search. Fast and optimal with admissible Manhattan heuristic."
+        "description": "Uses f(n) = g(n) + h(n) with Manhattan distance. Guarantees the optimal (shortest) solution path while expanding minimal nodes."
     },
-    "astar_misplaced": {
-        "name": "A* (Misplaced Tiles)",
+    "astar_linear_conflict": {
+        "name": "A* Search (Linear Conflict)",
         "type": "Informed (Heuristic)",
         "optimal": True,
         "time_complexity": "O(b^d)",
         "space_complexity": "O(b^d)",
-        "description": "A* using simple misplaced tile count h1. Optimal, but expands more nodes than Manhattan."
+        "description": "Uses Manhattan distance + linear conflict penalty (+2 per conflict). Highly informed and admissible."
     },
     "astar_euclidean": {
-        "name": "A* (Euclidean Distance)",
+        "name": "A* Search (Euclidean Distance)",
         "type": "Informed (Heuristic)",
         "optimal": True,
         "time_complexity": "O(b^d)",
         "space_complexity": "O(b^d)",
-        "description": "A* using Euclidean straight-line distance. Admissible, explores more nodes than Manhattan."
+        "description": "Uses straight-line Euclidean distance heuristic. Admissible but less informed than Manhattan distance."
     },
-    "greedy_manhattan": {
-        "name": "Greedy Best-First (Manhattan)",
+    "astar_misplaced": {
+        "name": "A* Search (Misplaced Tiles)",
         "type": "Informed (Heuristic)",
-        "optimal": False,
-        "time_complexity": "O(b^m)",
-        "space_complexity": "O(b^m)",
-        "description": "Expands node closest to goal f(n) = h(n). Extremely fast, but path length may not be optimal."
-    },
-    "greedy_linear_conflict": {
-        "name": "Greedy Best-First (Linear Conflict)",
-        "type": "Informed (Heuristic)",
-        "optimal": False,
-        "time_complexity": "O(b^m)",
-        "space_complexity": "O(b^m)",
-        "description": "Greedy search driven by Linear Conflict + Manhattan heuristic. Aggressive goal-seeking."
-    },
-    "greedy_misplaced": {
-        "name": "Greedy Best-First (Misplaced Tiles)",
-        "type": "Informed (Heuristic)",
-        "optimal": False,
-        "time_complexity": "O(b^m)",
-        "space_complexity": "O(b^m)",
-        "description": "Greedy search driven by number of misplaced tiles. Fast but path is usually sub-optimal."
+        "optimal": True,
+        "time_complexity": "O(b^d)",
+        "space_complexity": "O(b^d)",
+        "description": "Uses f(n) = g(n) + h(n) with the count of misplaced tiles. Admissible heuristic guaranteeing optimal solution."
     },
     "bfs": {
         "name": "Breadth-First Search (BFS)",
@@ -84,39 +63,63 @@ ALGORITHM_METADATA = {
         "optimal": True,
         "time_complexity": "O(b^d)",
         "space_complexity": "O(b^d)",
-        "description": "Level-by-level queue exploration. Guaranteed shortest path, but high memory footprint."
-    },
-    "iddfs": {
-        "name": "Iterative Deepening DFS (IDDFS)",
-        "type": "Uninformed (Blind)",
-        "optimal": True,
-        "time_complexity": "O(b^d)",
-        "space_complexity": "O(bd)",
-        "description": "Combines BFS optimality with DFS linear space complexity O(bd)."
-    },
-    "idastar_manhattan": {
-        "name": "Iterative Deepening A* (Manhattan)",
-        "type": "Informed (Heuristic)",
-        "optimal": True,
-        "time_complexity": "O(b^d)",
-        "space_complexity": "O(d)",
-        "description": "Korf's IDA* search. Optimal with linear memory footprint O(d) using f-bound contours."
-    },
-    "idastar_linear_conflict": {
-        "name": "Iterative Deepening A* (Linear Conflict)",
-        "type": "Informed (Heuristic)",
-        "optimal": True,
-        "time_complexity": "O(b^d)",
-        "space_complexity": "O(d)",
-        "description": "IDA* using Linear Conflict heuristic. Minimal node expansions with strict O(d) memory bounds."
+        "description": "Explores states level-by-level using a FIFO queue. Guarantees the shortest path for unit step costs."
     },
     "dfs": {
         "name": "Depth-First Search (DFS)",
         "type": "Uninformed (Blind)",
         "optimal": False,
         "time_complexity": "O(b^m)",
-        "space_complexity": "O(bm)",
-        "description": "Explores branch depth first. Included to demonstrate why blind DFS performs poorly on cyclic graphs."
+        "space_complexity": "O(b*m)",
+        "description": "Explores deeply along each branch before backtracking using a LIFO stack (depth-limited to avoid infinite loops)."
+    },
+    "iddfs": {
+        "name": "Iterative Deepening DFS (IDDFS)",
+        "type": "Uninformed (Blind)",
+        "optimal": True,
+        "time_complexity": "O(b^d)",
+        "space_complexity": "O(b*d)",
+        "description": "Combines DFS space efficiency with BFS optimality by iteratively increasing the depth limit."
+    },
+    "greedy_manhattan": {
+        "name": "Greedy Best-First Search (Manhattan)",
+        "type": "Informed (Heuristic)",
+        "optimal": False,
+        "time_complexity": "O(b^m)",
+        "space_complexity": "O(b^m)",
+        "description": "Evaluates nodes solely by heuristic f(n) = h(n). Fast goal pursuit, but does not guarantee the shortest path."
+    },
+    "greedy_linear_conflict": {
+        "name": "Greedy Best-First Search (Linear Conflict)",
+        "type": "Informed (Heuristic)",
+        "optimal": False,
+        "time_complexity": "O(b^m)",
+        "space_complexity": "O(b^m)",
+        "description": "Greedy best-first search guided by linear conflict heuristic."
+    },
+    "greedy_misplaced": {
+        "name": "Greedy Best-First Search (Misplaced)",
+        "type": "Informed (Heuristic)",
+        "optimal": False,
+        "time_complexity": "O(b^m)",
+        "space_complexity": "O(b^m)",
+        "description": "Greedy best-first search guided by misplaced tiles heuristic."
+    },
+    "idastar_manhattan": {
+        "name": "IDA* Search (Manhattan)",
+        "type": "Informed (Heuristic)",
+        "optimal": True,
+        "time_complexity": "O(b^d)",
+        "space_complexity": "O(d)",
+        "description": "Iterative Deepening A* with Manhattan distance. Guarantees optimal path with linear memory."
+    },
+    "idastar_linear_conflict": {
+        "name": "IDA* Search (Linear Conflict)",
+        "type": "Informed (Heuristic)",
+        "optimal": True,
+        "time_complexity": "O(b^d)",
+        "space_complexity": "O(d)",
+        "description": "Iterative Deepening A* with Linear Conflict heuristic. High pruning power with minimal memory."
     }
 }
 

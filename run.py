@@ -21,15 +21,22 @@ if sys.platform == "win32":
 
 def run_web():
     import uvicorn
+    import threading
+    import time
     from server import server_app
     print("\n" + "=" * 65)
     print("[*] LAUNCHING AI N-PUZZLE SOLVER WEB DASHBOARD")
     print("[*] URL: http://127.0.0.1:8000")
     print("=" * 65 + "\n")
-    try:
-        webbrowser.open("http://127.0.0.1:8000")
-    except Exception:
-        pass
+    
+    def _open_browser():
+        time.sleep(1.2)
+        try:
+            webbrowser.open("http://127.0.0.1:8000")
+        except Exception:
+            pass
+            
+    threading.Thread(target=_open_browser, daemon=True).start()
     uvicorn.run("server:server_app", host="127.0.0.1", port=8000, reload=True)
 
 def run_cli():

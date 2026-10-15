@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Puzzle Solver | Artificial Intelligence Minor Project</title>
+    <title>AI N-Puzzle Solver | Artificial Intelligence Minor Project</title>
     <!-- Modern Typography: Outfit & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Chart.js for Benchmark Visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/style.css?v=2">
 </head>
 <body>
     <!-- Top Header -->
@@ -24,7 +22,7 @@
                 </span>
             </div>
             <div class="header-text">
-                <h1>AI N-Puzzle Solver</h1>
+                <h1>AI 8-Puzzle Solver</h1>
                 <p class="subtitle">Artificial Intelligence Minor Project &bull; 5th Semester</p>
             </div>
         </div>
@@ -32,521 +30,224 @@
             <div id="solvability-badge" class="badge badge-success">
                 <span class="dot"></span> <span id="solvability-text">Solvable</span>
             </div>
-            <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound Effects">
-                <span id="sound-icon">🔊</span>
-            </button>
-            <button id="mode-toggle-btn" class="btn btn-secondary btn-sm" onclick="openTheoryModal()">
-                📚 Theory & Viva Guide
-            </button>
         </div>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="nav-tabs">
-        <button class="tab-btn active" data-tab="solver-tab">
-            <span class="tab-icon">🧩</span> Interactive Solver
-        </button>
-        <button class="tab-btn" data-tab="benchmark-tab">
-            <span class="tab-icon">⚡</span> Algorithm Benchmark Arena
-        </button>
-        <button class="tab-btn" data-tab="custom-tab">
-            <span class="tab-icon">✏️</span> Custom Board Editor
-        </button>
-        <button class="tab-btn" data-tab="theory-tab">
-            <span class="tab-icon">📖</span> State Space & AI Theory
-        </button>
-    </nav>
-
-    <!-- Main Container -->
+    <!-- Main Container: Focused on Puzzle Solving -->
     <main class="main-content">
-        <!-- ================= TAB 1: INTERACTIVE SOLVER ================= -->
-        <section id="solver-tab" class="tab-content active">
-            <div class="solver-layout">
-                <!-- Left Column: Visual Board & Playback -->
-                <div class="board-column">
-                    <div class="glass-card board-card">
-                        <div class="card-header">
-                            <div class="card-title-group">
-                                <h2>Sliding Tile Board</h2>
-                                <span class="tag" id="grid-size-tag">3x3 (8-Puzzle)</span>
-                            </div>
-                            <div class="board-status-info">
-                                <span id="board-heuristic-preview">Manhattan: <b id="preview-h-val">0</b></span>
-                            </div>
+        <div class="solver-layout">
+            <!-- Left Column: Visual Board & Playback -->
+            <div class="board-column">
+                <div class="glass-card board-card">
+                    <div class="card-header">
+                        <div class="card-title-group">
+                            <h2>Sliding Tile Board</h2>
+                            <span class="tag" id="grid-size-tag">3x3 (8-Puzzle)</span>
                         </div>
-
-                        <!-- Interactive Puzzle Board -->
-                        <div class="board-wrapper">
-                            <div id="victory-banner" class="victory-banner hidden">
-                                <span>🎉 Goal State Reached! Puzzle Solved! 🏆</span>
-                            </div>
-                            <div id="puzzle-board" class="puzzle-board size-3" role="grid" aria-label="Sliding Tile Board">
-                                <!-- Tiles generated dynamically by JavaScript -->
-                            </div>
-                        </div>
-
-                        <div class="board-footer-hint">
-                            <span>💡 Hint: Click adjacent tiles or use <b>Arrow Keys / WASD</b> to slide tiles manually!</span>
-                        </div>
-
-                        <!-- Step Timeline Scrubbing -->
-                        <div class="playback-timeline">
-                            <div class="timeline-labels">
-                                <span>Initial State</span>
-                                <span id="step-counter-label" class="step-badge">Step: 0 / 0</span>
-                                <span>Goal State</span>
-                            </div>
-                            <input type="range" id="timeline-slider" min="0" max="0" value="0" class="custom-slider" disabled>
-                        </div>
-
-                        <!-- Playback Controls -->
-                        <div class="playback-controls">
-                            <button id="btn-first" class="ctrl-btn" title="First Step (Initial)" disabled>⏮</button>
-                            <button id="btn-prev" class="ctrl-btn" title="Previous Step" disabled>◀</button>
-                            <button id="btn-play" class="ctrl-btn play-btn" title="Play Solution" disabled>
-                                <span id="play-icon">▶</span>
-                            </button>
-                            <button id="btn-next" class="ctrl-btn" title="Next Step" disabled>▶</button>
-                            <button id="btn-last" class="ctrl-btn" title="Last Step (Goal)" disabled>⏭</button>
-
-                            <div class="speed-selector">
-                                <label for="playback-speed">Speed:</label>
-                                <select id="playback-speed" class="custom-select select-sm">
-                                    <option value="1200">0.5x (Slow)</option>
-                                    <option value="600" selected>1.0x (Normal)</option>
-                                    <option value="300">2.0x (Fast)</option>
-                                    <option value="120">4.0x (Ultra)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Action Sequence Bar -->
-                        <div class="move-history-container">
-                            <div class="move-history-title">Move Sequence:</div>
-                            <div id="action-pills" class="action-pills">
-                                <span class="placeholder-text">Press "Solve Puzzle" to compute optimal solution path</span>
-                            </div>
+                        <div class="board-status-info">
+                            <span id="board-heuristic-preview">Manhattan: <b id="preview-h-val">6</b></span>
                         </div>
                     </div>
-                </div>
 
-                <!-- Right Column: Control Center & Metrics -->
-                <div class="controls-column">
-                    <!-- Controls Card -->
-                    <div class="glass-card controls-card">
-                        <div class="card-header">
-                            <h2>Configuration & Controls</h2>
+                    <!-- Interactive Puzzle Board -->
+                    <div class="board-wrapper">
+                        <div id="victory-banner" class="victory-banner hidden">
+                            <span>🎉 Goal State Reached! Puzzle Solved! 🏆</span>
                         </div>
-
-                        <!-- Puzzle Presets -->
-                        <div class="form-group">
-                            <label for="preset-select">Curated Presets:</label>
-                            <div class="input-row">
-                                <select id="preset-select" class="custom-select">
-                                    <!-- Populated dynamically -->
-                                </select>
-                                <button id="btn-load-preset" class="btn btn-secondary">Load</button>
-                            </div>
+                        <div id="puzzle-board" class="puzzle-board size-3" role="grid" aria-label="Sliding Tile Board">
+                            <div class="puzzle-tile clickable">4</div>
+                            <div class="puzzle-tile in-goal clickable">1</div>
+                            <div class="puzzle-tile in-goal">3</div>
+                            <div class="puzzle-tile clickable">2</div>
+                            <div class="puzzle-tile empty-slot"></div>
+                            <div class="puzzle-tile clickable">5</div>
+                            <div class="puzzle-tile in-goal">7</div>
+                            <div class="puzzle-tile in-goal clickable">8</div>
+                            <div class="puzzle-tile">6</div>
                         </div>
+                    </div>
 
-                        <!-- Random Shuffle -->
-                        <div class="form-group">
-                            <label>Generate Solvable Random State:</label>
-                            <div class="shuffle-row">
-                                <input type="range" id="shuffle-steps" min="3" max="35" value="15" class="custom-slider">
-                                <span id="shuffle-steps-val" class="slider-val">15 moves</span>
-                                <button id="btn-shuffle" class="btn btn-secondary">🔀 Shuffle</button>
-                            </div>
+                    <div class="board-footer-hint">
+                        <span>💡 Hint: Click adjacent tiles or use <b>Arrow Keys / WASD</b> to slide tiles manually!</span>
+                    </div>
+
+                    <!-- Step Timeline Scrubbing -->
+                    <div class="playback-timeline">
+                        <div class="timeline-labels">
+                            <span>Initial State</span>
+                            <span id="step-counter-label" class="step-badge">Step: 0 / 0</span>
+                            <span>Goal State</span>
                         </div>
+                        <input type="range" id="timeline-slider" min="0" max="0" value="0" class="custom-slider" disabled>
+                    </div>
 
-                        <!-- Grid Size Toggle -->
-                        <div class="form-group">
-                            <label>Puzzle Dimensions:</label>
-                            <div class="btn-group-toggle">
-                                <button class="btn-toggle active" data-size="3">3x3 (8-Puzzle)</button>
-                                <button class="btn-toggle" data-size="4">4x4 (15-Puzzle)</button>
-                            </div>
-                        </div>
+                    <!-- Playback Controls -->
+                    <div class="playback-controls">
+                        <button id="btn-first" class="ctrl-btn" title="First Step (Initial)" disabled>⏮</button>
+                        <button id="btn-prev" class="ctrl-btn" title="Previous Step" disabled>◀</button>
+                        <button id="btn-play" class="ctrl-btn play-btn" title="Play / Pause Solution" disabled>
+                            <span id="play-icon">▶</span>
+                        </button>
+                        <button id="btn-next" class="ctrl-btn" title="Next Step" disabled>▶</button>
+                        <button id="btn-last" class="ctrl-btn" title="Last Step (Goal)" disabled>⏭</button>
 
-                        <!-- Search Algorithm Selection -->
-                        <div class="form-group">
-                            <label for="algorithm-select">AI Search Algorithm:</label>
-                            <select id="algorithm-select" class="custom-select">
-                                <optgroup label="Informed / Heuristic Search (Optimal)">
-                                    <option value="astar_linear_conflict" selected>A* Search (Linear Conflict + Manhattan)</option>
-                                    <option value="astar_manhattan">A* Search (Manhattan Distance)</option>
-                                    <option value="astar_misplaced">A* Search (Misplaced Tiles)</option>
-                                    <option value="astar_euclidean">A* Search (Euclidean Distance)</option>
-                                    <option value="idastar_linear_conflict">IDA* Search (Linear Conflict - Minimal Memory)</option>
-                                    <option value="idastar_manhattan">IDA* Search (Manhattan Distance - Linear Memory)</option>
-                                </optgroup>
-                                <optgroup label="Informed / Heuristic Search (Sub-optimal / Fast)">
-                                    <option value="greedy_manhattan">Greedy Best-First (Manhattan)</option>
-                                    <option value="greedy_linear_conflict">Greedy Best-First (Linear Conflict)</option>
-                                    <option value="greedy_misplaced">Greedy Best-First (Misplaced Tiles)</option>
-                                </optgroup>
-                                <optgroup label="Uninformed / Blind Search">
-                                    <option value="bfs">Breadth-First Search (BFS) [Optimal]</option>
-                                    <option value="iddfs">Iterative Deepening DFS (IDDFS) [Optimal]</option>
-                                    <option value="dfs">Depth-First Search (DFS) [Depth-Limited 30]</option>
-                                </optgroup>
+                        <div class="speed-selector">
+                            <label for="playback-speed">Speed:</label>
+                            <select id="playback-speed" class="custom-select select-sm">
+                                <option value="1000">0.5x (Slow)</option>
+                                <option value="600" selected>1.0x (Normal)</option>
+                                <option value="300">2.0x (Fast)</option>
                             </select>
                         </div>
-
-                        <!-- Algorithm Info Snippet -->
-                        <div id="alg-info-box" class="info-snippet">
-                            <span class="info-tag" id="alg-category-tag">Informed (Heuristic)</span>
-                            <span class="info-tag opt-tag" id="alg-optimal-tag">Guaranteed Optimal</span>
-                            <p id="alg-description-text" class="info-description">
-                                A* with Manhattan + Linear Conflict. Expands the fewest nodes while guaranteeing an optimal solution.
-                            </p>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="action-buttons-row">
-                            <button id="btn-solve" class="btn btn-primary btn-glow">
-                                <span class="btn-icon">⚡</span> Solve Puzzle
-                            </button>
-                            <button id="btn-reset" class="btn btn-secondary">
-                                ↺ Reset
-                            </button>
-                        </div>
                     </div>
 
-                    <!-- Performance Metrics Card -->
-                    <div class="glass-card metrics-card">
-                        <div class="card-header">
-                            <h2>Performance Metrics</h2>
-                            <span id="metrics-status" class="status-ready">Ready</span>
-                        </div>
-
-                        <div class="metrics-grid">
-                            <div class="metric-box">
-                                <div class="metric-icon">🎯</div>
-                                <div class="metric-info">
-                                    <span class="metric-label">Solution Cost</span>
-                                    <span id="metric-cost" class="metric-val">--</span>
-                                    <span class="metric-sub">Optimal Moves</span>
-                                </div>
-                            </div>
-
-                            <div class="metric-box">
-                                <div class="metric-icon">🔍</div>
-                                <div class="metric-info">
-                                    <span class="metric-label">Nodes Expanded</span>
-                                    <span id="metric-nodes" class="metric-val">--</span>
-                                    <span class="metric-sub">Time Exploration</span>
-                                </div>
-                            </div>
-
-                            <div class="metric-box">
-                                <div class="metric-icon">💾</div>
-                                <div class="metric-info">
-                                    <span class="metric-label">Peak Frontier</span>
-                                    <span id="metric-frontier" class="metric-val">--</span>
-                                    <span class="metric-sub">Max Memory Footprint</span>
-                                </div>
-                            </div>
-
-                            <div class="metric-box">
-                                <div class="metric-icon">⏱️</div>
-                                <div class="metric-info">
-                                    <span class="metric-label">Execution Time</span>
-                                    <span id="metric-time" class="metric-val">--</span>
-                                    <span class="metric-sub">Milliseconds (ms)</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Solvability Mathematics Explanation Box -->
-                        <div class="solvability-explanation" id="solvability-explanation-box">
-                            <div class="explanation-title">
-                                <span>📐 Inversion Parity Analysis:</span>
-                            </div>
-                            <p id="inversion-explanation-text">
-                                Evaluating mathematical solvability...
-                            </p>
+                    <!-- Action Sequence Bar -->
+                    <div class="move-history-container">
+                        <div class="move-history-title">Move Sequence:</div>
+                        <div id="action-pills" class="action-pills">
+                            <span class="placeholder-text">Press "Solve Puzzle" to compute optimal solution path</span>
                         </div>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <!-- ================= TAB 2: ALGORITHM BENCHMARK ARENA ================= -->
-        <section id="benchmark-tab" class="tab-content">
-            <div class="glass-card benchmark-container">
-                <div class="card-header">
-                    <div>
-                        <h2>Algorithm Benchmark Arena</h2>
-                        <p class="subtitle">Execute and evaluate multiple search algorithms on the identical initial board configuration.</p>
+            <!-- Right Column: Control Center & Metrics -->
+            <div class="controls-column">
+                <!-- Controls Card -->
+                <div class="glass-card controls-card">
+                    <div class="card-header">
+                        <h2>Configuration & Controls</h2>
                     </div>
-                    <div class="benchmark-actions">
-                        <button id="btn-run-benchmark" class="btn btn-primary btn-glow">
-                            🚀 Run All Algorithms
+
+                    <!-- Puzzle Presets -->
+                    <div class="form-group">
+                        <label for="preset-select">Curated Presets:</label>
+                        <div class="input-row">
+                            <select id="preset-select" class="custom-select">
+                                <option value="easy_6_moves" selected>[Easy] Easy (6 moves)</option>
+                                <option value="very_easy_2_moves">[Easy] Very Easy (2 moves)</option>
+                                <option value="medium_8_moves">[Medium] Medium (8 moves)</option>
+                                <option value="medium_12_moves">[Medium] Medium-Hard (12 moves)</option>
+                                <option value="medium_18_moves">[Medium] Medium-Hard (18 moves)</option>
+                                <option value="hard_20_moves">[Hard] Hard (20 moves)</option>
+                                <option value="extreme_31_moves">[Expert] Worst-Case 8-Puzzle (31 moves)</option>
+                                <option value="unsolvable_demo">[Unsolvable] Unsolvable Demo (Odd Inversions)</option>
+                            </select>
+                            <button id="btn-load-preset" class="btn btn-secondary">Load</button>
+                        </div>
+                    </div>
+
+                    <!-- Random Shuffle -->
+                    <div class="form-group">
+                        <label>Generate Solvable Random State:</label>
+                        <div class="shuffle-row">
+                            <input type="range" id="shuffle-steps" min="3" max="25" value="12" class="custom-slider">
+                            <span id="shuffle-steps-val" class="slider-val">12 moves</span>
+                            <button id="btn-shuffle" class="btn btn-secondary">🔀 Shuffle</button>
+                        </div>
+                    </div>
+
+                    <!-- Search Algorithm Selection -->
+                    <div class="form-group">
+                        <label for="algorithm-select">AI Search Algorithm:</label>
+                        <select id="algorithm-select" class="custom-select">
+                            <optgroup label="Informed / Heuristic Search">
+                                <option value="astar_manhattan" selected>A* Search (Manhattan Distance) [Recommended]</option>
+                                <option value="astar_linear_conflict">A* Search (Linear Conflict) [Highest Pruning]</option>
+                                <option value="astar_misplaced">A* Search (Misplaced Tiles)</option>
+                                <option value="astar_euclidean">A* Search (Euclidean Distance)</option>
+                                <option value="idastar_manhattan">IDA* Search (Manhattan Distance) [Optimal, O(d) Space]</option>
+                                <option value="idastar_linear_conflict">IDA* Search (Linear Conflict)</option>
+                                <option value="greedy_manhattan">Greedy Best-First Search (Manhattan)</option>
+                                <option value="greedy_linear_conflict">Greedy Best-First Search (Linear Conflict)</option>
+                            </optgroup>
+                            <optgroup label="Uninformed / Blind Search">
+                                <option value="bfs">Breadth-First Search (BFS) [Optimal]</option>
+                                <option value="iddfs">Iterative Deepening DFS (IDDFS) [Optimal, O(bd) Space]</option>
+                                <option value="dfs">Depth-First Search (DFS) [Depth-Limited]</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <!-- Algorithm Info Snippet -->
+                    <div id="alg-info-box" class="info-snippet">
+                        <span class="info-tag" id="alg-category-tag">Informed (Heuristic)</span>
+                        <span class="info-tag opt-tag" id="alg-optimal-tag">Guaranteed Optimal</span>
+                        <p id="alg-description-text" class="info-description">
+                            Uses f(n) = g(n) + h(n) with Manhattan distance. Guarantees the shortest solution path while expanding minimal nodes.
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons-row">
+                        <button id="btn-solve" class="btn btn-primary btn-glow">
+                            <span class="btn-icon">⚡</span> Solve Puzzle
                         </button>
-                        <button id="btn-export-benchmark" class="btn btn-secondary" disabled>
-                            📥 Export Report (CSV)
+                        <button id="btn-reset" class="btn btn-secondary">
+                            ↺ Reset
                         </button>
                     </div>
                 </div>
 
-                <!-- Algorithm Selection Checkboxes -->
-                <div class="benchmark-selectors">
-                    <label class="section-label">Select Algorithms to Benchmark:</label>
-                    <div class="checkbox-group" id="bench-checkboxes">
-                        <label class="check-item"><input type="checkbox" value="astar_linear_conflict" checked> A* (Linear Conflict)</label>
-                        <label class="check-item"><input type="checkbox" value="astar_manhattan" checked> A* (Manhattan)</label>
-                        <label class="check-item"><input type="checkbox" value="astar_misplaced" checked> A* (Misplaced Tiles)</label>
-                        <label class="check-item"><input type="checkbox" value="astar_euclidean"> A* (Euclidean)</label>
-                        <label class="check-item"><input type="checkbox" value="greedy_manhattan" checked> Greedy (Manhattan)</label>
-                        <label class="check-item"><input type="checkbox" value="greedy_linear_conflict"> Greedy (Linear Conflict)</label>
-                        <label class="check-item"><input type="checkbox" value="bfs" checked> BFS (Breadth-First)</label>
-                        <label class="check-item"><input type="checkbox" value="idastar_linear_conflict" checked> IDA* (Linear Conflict)</label>
-                        <label class="check-item"><input type="checkbox" value="idastar_manhattan"> IDA* (Manhattan)</label>
-                        <label class="check-item"><input type="checkbox" value="iddfs"> IDDFS</label>
-                        <label class="check-item"><input type="checkbox" value="dfs"> DFS (Depth-Limited)</label>
+                <!-- Performance Metrics Card -->
+                <div class="glass-card metrics-card">
+                    <div class="card-header">
+                        <h2>Solution Performance Metrics</h2>
+                        <span id="metrics-status" class="status-ready">Ready</span>
                     </div>
-                </div>
 
-                <!-- Benchmark Summary Podium -->
-                <div id="benchmark-podium" class="podium-row hidden">
-                    <div class="podium-card champion">
-                        <span class="medal">🏆</span>
-                        <div class="podium-meta">
-                            <span class="podium-title">Fewest Nodes Expanded</span>
-                            <span id="podium-nodes-name" class="podium-winner">--</span>
-                            <span id="podium-nodes-val" class="podium-score">-- nodes</span>
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-icon">🎯</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Solution Moves</span>
+                                <span id="metric-cost" class="metric-val">--</span>
+                                <span class="metric-sub">Path Length</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="podium-card speed">
-                        <span class="medal">⚡</span>
-                        <div class="podium-meta">
-                            <span class="podium-title">Fastest Execution</span>
-                            <span id="podium-speed-name" class="podium-winner">--</span>
-                            <span id="podium-speed-val" class="podium-score">-- ms</span>
-                        </div>
-                    </div>
-                    <div class="podium-card memory">
-                        <span class="medal">🛡️</span>
-                        <div class="podium-meta">
-                            <span class="podium-title">Lowest Memory Footprint</span>
-                            <span id="podium-mem-name" class="podium-winner">--</span>
-                            <span id="podium-mem-val" class="podium-score">-- max frontier</span>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Benchmark Data Table -->
-                <div class="table-responsive">
-                    <table class="benchmark-table" id="benchmark-table">
-                        <thead>
-                            <tr>
-                                <th>Algorithm</th>
-                                <th>Type</th>
-                                <th>Cost (Moves)</th>
-                                <th>Nodes Expanded</th>
-                                <th>Max Frontier (Mem)</th>
-                                <th>Time (ms)</th>
-                                <th>Optimal?</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="benchmark-table-body">
-                            <tr>
-                                <td colspan="8" class="empty-table-msg">
-                                    Click <b>"Run All Algorithms"</b> to generate performance comparison data.
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <div class="metric-box">
+                            <div class="metric-icon">🔍</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Nodes Expanded</span>
+                                <span id="metric-nodes" class="metric-val">--</span>
+                                <span class="metric-sub">Explored States</span>
+                            </div>
+                        </div>
 
-                <!-- Comparative Visual Charts -->
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <h3>Nodes Expanded (Exploration Space)</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="chart-nodes"></canvas>
+                        <div class="metric-box">
+                            <div class="metric-icon">⏱️</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Execution Time</span>
+                                <span id="metric-time" class="metric-val">--</span>
+                                <span class="metric-sub">Milliseconds (ms)</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-box">
+                            <div class="metric-icon">💾</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Peak Memory</span>
+                                <span id="metric-frontier" class="metric-val">--</span>
+                                <span class="metric-sub">Max Frontier States</span>
+                            </div>
                         </div>
                     </div>
-                    <div class="chart-card">
-                        <h3>Execution Time (ms)</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="chart-time"></canvas>
+
+                    <!-- Solvability Mathematics Explanation Box -->
+                    <div class="solvability-explanation" id="solvability-explanation-box">
+                        <div class="explanation-title">
+                            <span>📐 Solvability Status (Inversion Parity):</span>
                         </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Peak Frontier Size (Memory)</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="chart-memory"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <h3>Solution Path Cost (Move Count)</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="chart-cost"></canvas>
-                        </div>
+                        <p id="inversion-explanation-text">
+                            Inversion count is 6 (even). For a 3x3 puzzle, solvability requires an EVEN number of inversions.
+                        </p>
                     </div>
                 </div>
             </div>
-        </section>
-
-        <!-- ================= TAB 3: CUSTOM BOARD EDITOR ================= -->
-        <section id="custom-tab" class="tab-content">
-            <div class="glass-card custom-editor-card">
-                <div class="card-header">
-                    <div>
-                        <h2>Custom Board Configuration</h2>
-                        <p class="subtitle">Design your own puzzle instance or paste state permutations to test edge cases.</p>
-                    </div>
-                </div>
-
-                <div class="custom-editor-layout">
-                    <!-- Interactive Cell Inputs -->
-                    <div class="editor-grid-container">
-                        <h3>Interactive Grid Input (0 represents empty space):</h3>
-                        <div id="custom-grid-inputs" class="custom-grid size-3">
-                            <!-- Input cells generated dynamically -->
-                        </div>
-                        <div class="grid-actions">
-                            <button id="btn-validate-custom" class="btn btn-secondary">🔍 Validate & Check Solvability</button>
-                            <button id="btn-apply-custom" class="btn btn-primary">Apply to Solver</button>
-                        </div>
-                    </div>
-
-                    <!-- Text-based Input & Verification -->
-                    <div class="editor-text-container">
-                        <h3>Text Permutation Input:</h3>
-                        <p class="hint">Enter numbers separated by spaces or commas:</p>
-                        <textarea id="custom-text-input" class="custom-textarea" placeholder="e.g. 1 2 3 4 0 5 7 8 6"></textarea>
-                        
-                        <div class="preset-quick-pills">
-                            <span>Quick Fill:</span>
-                            <button class="pill-btn" onclick="quickFill([1,2,3,4,5,6,0,7,8])">Goal - 2 moves</button>
-                            <button class="pill-btn" onclick="quickFill([4,1,3,2,0,5,7,8,6])">Classic 6 moves</button>
-                            <button class="pill-btn" onclick="quickFill([1,2,3,4,5,6,8,7,0])">Unsolvable Inversion</button>
-                        </div>
-
-                        <!-- Live Solvability Diagnostics -->
-                        <div id="custom-diagnostics" class="diagnostics-panel">
-                            <h4>Validation Status:</h4>
-                            <div id="custom-status-text" class="status-msg">Enter a board above and click validate.</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ================= TAB 4: AI THEORY & VIVA GUIDE ================= -->
-        <section id="theory-tab" class="tab-content">
-            <div class="glass-card theory-container">
-                <div class="card-header">
-                    <div>
-                        <h2>Artificial Intelligence Theory & Viva Comprehensive Guide</h2>
-                        <p class="subtitle">Academic reference material covering state spaces, heuristics admissibility, and oral exam prep.</p>
-                    </div>
-                </div>
-
-                <div class="theory-grid">
-                    <!-- Section 1: Problem Formulation -->
-                    <div class="theory-card">
-                        <h3>1. Formal State Space Problem Formulation</h3>
-                        <ul class="theory-list">
-                            <li><b>State Representation:</b> A permutation of $\{0, 1, \dots, N^2 - 1\}$, where $0$ represents the blank tile.</li>
-                            <li><b>Initial State:</b> Any arbitrary valid configuration of tiles.</li>
-                            <li><b>Actions:</b> Move blank $\in \{\text{UP}, \text{DOWN}, \text{LEFT}, \text{RIGHT}\}$ if within grid boundaries.</li>
-                            <li><b>Transition Model:</b> Swaps the blank tile with the adjacent tile in the designated direction.</li>
-                            <li><b>Goal Test:</b> Checks if current board matches the target ordered state $(1, 2, \dots, N^2-1, 0)$.</li>
-                            <li><b>Path Cost:</b> Each transition has uniform unit cost $c(n, a, n') = 1$. Total cost = number of moves.</li>
-                            <li><b>State Space Size:</b> For 8-puzzle: $\frac{9!}{2} = 181,440$ reachable states. For 15-puzzle: $\frac{16!}{2} \approx 10^{13}$ states.</li>
-                        </ul>
-                    </div>
-
-                    <!-- Section 2: Mathematical Solvability (Inversion Parity) -->
-                    <div class="theory-card">
-                        <h3>2. Mathematical Solvability (Inversion Theorem)</h3>
-                        <p>Not every random permutation is solvable. Exactly 50% of all configurations are unreachable!</p>
-                        <div class="formula-box">
-                            <b>Definition:</b> An <i>inversion</i> is a pair of tiles $(a, b)$ such that $a > b$ and $a$ appears before $b$ in linear order (ignoring blank $0$).
-                        </div>
-                        <ul class="theory-list">
-                            <li><b>Odd Grid Width (3x3):</b> Horizontal moves don't change inversions. Vertical moves change inversions by an even number ($-2, 0, +2$). Parity is invariant. Therefore, a 3x3 state is <b>solvable iff inversion count is EVEN</b>.</li>
-                            <li><b>Even Grid Width (4x4):</b> Vertical moves change inversions by an odd number. Hence: <code>(inversions + blank_row_from_bottom) % 2 == 1</code>.</li>
-                        </ul>
-                    </div>
-
-                    <!-- Section 3: Heuristics & Admissibility -->
-                    <div class="theory-card">
-                        <h3>3. Heuristics & Admissibility Criteria</h3>
-                        <ul class="theory-list">
-                            <li><b>Admissibility:</b> $h(n) \le h^*(n)$ for all $n$, where $h^*(n)$ is the true shortest distance to goal. Guarantees A* finds an optimal solution!</li>
-                            <li><b>Consistency (Monotonicity):</b> $h(n) \le c(n, a, n') + h(n')$. Triangle inequality. Guarantees that the first time A* expands a state, its path is already optimal (no reopenings needed).</li>
-                            <li><b>$h_1$ Misplaced Tiles:</b> Counts misplaced tiles. $h_1(n) \le h^*(n)$. Admissible.</li>
-                            <li><b>$h_2$ Manhattan Distance:</b> Sum of grid distances. $h_2(n) \ge h_1(n)$ and $h_2(n) \le h^*(n)$. Strictly dominates $h_1$.</li>
-                            <li><b>$h_3$ Linear Conflict:</b> $h_{\text{LC}} = h_2 + 2 \times \text{conflicts}$. Two tiles in the correct row/col that must cross each other require at least 2 extra moves. Admissible and strictly dominates Manhattan!</li>
-                        </ul>
-                    </div>
-
-                    <!-- Section 4: Complexity Matrix -->
-                    <div class="theory-card">
-                        <h3>4. Big-O Complexity Comparison Matrix</h3>
-                        <table class="mini-table">
-                            <thead>
-                                <tr>
-                                    <th>Algorithm</th>
-                                    <th>Time</th>
-                                    <th>Space</th>
-                                    <th>Complete?</th>
-                                    <th>Optimal?</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td><b>BFS</b></td><td>$O(b^d)$</td><td>$O(b^d)$</td><td>Yes</td><td>Yes</td></tr>
-                                <tr><td><b>DFS</b></td><td>$O(b^m)$</td><td>$O(bm)$</td><td>No (cyclic)</td><td>No</td></tr>
-                                <tr><td><b>IDDFS</b></td><td>$O(b^d)$</td><td>$O(bd)$</td><td>Yes</td><td>Yes</td></tr>
-                                <tr><td><b>Greedy</b></td><td>$O(b^m)$</td><td>$O(b^m)$</td><td>No (graph)</td><td>No</td></tr>
-                                <tr><td><b>A*</b></td><td>$O(b^d)$</td><td>$O(b^d)$</td><td>Yes</td><td>Yes (if admissible)</td></tr>
-                                <tr><td><b>IDA*</b></td><td>$O(b^d)$</td><td>$O(d)$</td><td>Yes</td><td>Yes</td></tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Section 5: Top Viva Questions -->
-                    <div class="theory-card full-width">
-                        <h3>5. Top 5 Viva Questions & Answers</h3>
-                        <div class="faq-accordion">
-                            <details class="faq-item" open>
-                                <summary><b>Q1: Why does A* search guarantee an optimal solution?</b></summary>
-                                <p>A* explores states ordered by $f(n) = g(n) + h(n)$. When $h(n)$ is admissible (never overestimates true cost), any goal node popped from the frontier has a cost less than or equal to any unexpanded node on the frontier. Therefore, the first time the goal is popped, its path cost is guaranteed minimal.</p>
-                            </details>
-                            <details class="faq-item">
-                                <summary><b>Q2: What is the difference between heuristic Admissibility and Consistency?</b></summary>
-                                <p>Admissibility requires $h(n) \le h^*(n)$. Consistency (monotonicity) requires $h(n) \le c(n, a, n') + h(n')$, which is the triangle inequality. Consistency implies admissibility. Under a consistent heuristic, $f(n)$ values along any path are monotonically non-decreasing, guaranteeing that every node expanded by A* has an optimal $g$-score without needing to reopen nodes.</p>
-                            </details>
-                            <details class="faq-item">
-                                <summary><b>Q3: What is the Linear Conflict heuristic and why is it admissible?</b></summary>
-                                <p>A linear conflict occurs when two tiles $t_j$ and $t_k$ are in their goal line (row or column), but $t_j$ is placed in front of $t_k$ while its goal is behind $t_k$'s goal. Since tiles cannot jump over each other, one tile must leave that row/column and re-enter, which mathematically requires at least 2 extra moves not accounted for in standard Manhattan distance. Hence, $h_{\text{LC}}(n) = h_{\text{Manhattan}}(n) + 2 \times \text{conflicts} \le h^*(n)$.</p>
-                            </details>
-                            <details class="faq-item">
-                                <summary><b>Q4: Why does BFS struggle with Hard 8-puzzle instances while IDA* succeeds?</b></summary>
-                                <p>BFS keeps all generated states in memory (queue). With an average branching factor $b \approx 3$, at depth $d = 20$, the frontier contains up to $3^{20} \approx 3.4 \times 10^9$ states, quickly causing Out-Of-Memory (OOM) errors. In contrast, IDA* uses depth-first iterations with an $f$-bound cutoff, consuming only $O(d)$ memory (proportional to depth).</p>
-                            </details>
-                            <details class="faq-item">
-                                <summary><b>Q5: Can any 8-puzzle configuration be transformed into any other?</b></summary>
-                                <p>No. The state space of the 8-puzzle is partitioned into two mutually disconnected components of $181,440$ states each ($\frac{9!}{2}$). Legal tile moves preserve the parity of the permutation's inversion count. Therefore, a state with an odd number of inversions can never reach the standard goal state (which has 0 inversions, an even number).</p>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-        <p>AI N-Puzzle Solver &bull; Artificial Intelligence Minor Project &bull; Built with Python, FastAPI, and Vanilla CSS</p>
-    </footer>
-
-    <script src="/static/script.js"></script>
+    <script src="/static/script.js?v=2"></script>
 </body>
 </html>
